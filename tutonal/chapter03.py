@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Path
-from typing import Optional
+from fastapi import APIRouter, Path, Query
+from typing import Optional, List
 from enum import Enum
 
 app03 = APIRouter()
@@ -43,3 +43,28 @@ async def path_params_validate(num: int = Path(...,
                                                ge=1,
                                                le=10)):
     return num
+
+
+"""Query Parameters and String Validatings 查询参数和字符串验证"""
+
+
+@app03.get("/query")
+async def page_limit(page: int = 1,
+                     limit: Optional[int] = None):  # 给了默认值就是默认参数，没给就是必填参数
+    if limit:
+        return {"page": page, "limit": limit}
+    return {"page": page}
+
+
+@app03.get("/query/bool/conversion")
+async def type_conversion(
+        param: bool = False):  # bool类型转换：yes on 1 True true会转换成true
+    return param
+
+
+@app03.get("/query/validations")
+async def query_params_validate(
+        value: str = Query(..., min_length=8, max_length=16, regex="^a"),
+        values: List[str] = Query(default=["v1", "v2"]),
+        alias="alias_name"):
+    return value, values
