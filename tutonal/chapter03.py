@@ -2,6 +2,7 @@ from fastapi import APIRouter, Path, Query
 from typing import Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field
+from datetime import date
 
 app03 = APIRouter()
 """Path Parameters and Number Validations 路径参数和数字验证"""
@@ -103,7 +104,7 @@ async def city_info(city: CityInfo):
 
 
 @app03.put("/request_body/city/{name}")
-def mix_city_info(name: str,
+async def mix_city_info(name: str,
                   city01: CityInfo,
                   city02: CityInfo,  # Body可以定义多个， 下面是查询参数
                   confirmed: int = Query(ge=0, description="确诊数", default=0),   
@@ -111,4 +112,20 @@ def mix_city_info(name: str,
     if name == "Shanghai":
         return {"Shanghai": {"confirmed": confirmed, "death": death}}
     return city01.dict(), city02.dict()
+
+
+"""Request Body - Nested Models 数据格式嵌套的请求体"""
+
+
+class Data(BaseModel):
+    city: List[CityInfo] = None   # 这里就是定义数据格式嵌套的请求体
+    date: date  # 额外的数据类型还有uuid,datetime bytes frozenset等
+    confirmed: int = Field(ge=0, description="确诊数", default=0)
+    deaths: int = Field(ge=0, description="死亡数", default=0)
+    recovered: int = Field(ge=0, description="痊愈数", default=0)
+
+
+@app03.put("/request_body/nested")
+async def nested_models(data: Data):
+    return data
 
