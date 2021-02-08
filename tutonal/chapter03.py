@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Path, Query, Cookie, Header
 from typing import Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field
@@ -104,11 +104,12 @@ async def city_info(city: CityInfo):
 
 
 @app03.put("/request_body/city/{name}")
-async def mix_city_info(name: str,
-                  city01: CityInfo,
-                  city02: CityInfo,  # Body可以定义多个， 下面是查询参数
-                  confirmed: int = Query(ge=0, description="确诊数", default=0),   
-                  death: int = Query(ge=0, description="死亡数", default=0)):
+async def mix_city_info(
+    name: str,
+    city01: CityInfo,
+    city02: CityInfo,  # Body可以定义多个， 下面是查询参数
+    confirmed: int = Query(ge=0, description="确诊数", default=0),
+    death: int = Query(ge=0, description="死亡数", default=0)):
     if name == "Shanghai":
         return {"Shanghai": {"confirmed": confirmed, "death": death}}
     return city01.dict(), city02.dict()
@@ -118,7 +119,7 @@ async def mix_city_info(name: str,
 
 
 class Data(BaseModel):
-    city: List[CityInfo] = None   # 这里就是定义数据格式嵌套的请求体
+    city: List[CityInfo] = None  # 这里就是定义数据格式嵌套的请求体
     date: date  # 额外的数据类型还有uuid,datetime bytes frozenset等
     confirmed: int = Field(ge=0, description="确诊数", default=0)
     deaths: int = Field(ge=0, description="死亡数", default=0)
@@ -128,4 +129,23 @@ class Data(BaseModel):
 @app03.put("/request_body/nested")
 async def nested_models(data: Data):
     return data
+
+
+"""Cookie 和 Header 参数"""
+
+
+@app03.get("/cookie")  # 效果只能用Postman测试
+def cookie(cookie_id: Optional[str] = Cookie(None)):  # 定义Cookie参数需要使用Cookie类
+    return {"cookie_id": cookie_id}
+
+
+@app03.get("/header")
+def header(user_agent: Optional[str] = Header(None, convert_underscores=True),
+           x_token: List[str] = Header(None)):
+    """
+    有些HTTP代理和服务器是不允许在请求头中带有下划线，所以Header提供convert_underscores属性让设置
+    user_agent: convert_underscores=True 会把 user_agent变成user-agent
+    x_token: x_token是包含多个值的列表
+    """
+    return {"User-Agent": user_agent, "x_token": x_token}
 
