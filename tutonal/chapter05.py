@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header, HTTPException
 from typing import Optional
 
 app05 = APIRouter()
@@ -72,3 +72,31 @@ async def sub_dependency(final_query: str = Depends(sub_query,
                                                     use_cache=True)):
     """use_cache默认是True,表示当多个依赖有一个共同的子依赖时，每次request请求只会调用子依赖一次"""
     return {"sub_dependency": final_query}
+
+
+"""Dependencies in path operation decorators 路径操作装饰器中的多依赖"""
+
+
+async def verify_token(x_token: str = Header(...)):
+    """
+    没有返回值的子依赖
+    """
+    if x_token != "fake-super-secret-token":
+        raise HTTPException(status_code=400, detail="X-Token header invalid")
+    return x_token
+
+
+async def verify_key(x_key: str = Header(...)):
+    """
+    有返回值的子依赖，但是返回值不会被调用
+    """
+    if x_key != "fake-super-secret-key":
+        raise HTTPException(status_code=400, detail="X-Key header invalid")
+    return x_key
+
+
+@app05.get("/dependency_in_path_operation",
+           dependencies=[Depends(verify_token),
+                         Depends(verify_key)])
+async def dependency_in_path_operation():
+    return [{"user": "user01"}, {"user": "user02"}]
