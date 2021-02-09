@@ -52,3 +52,23 @@ async def classes_as_dependencies(commons=Depends(CommonQueryParams)):
     items = fake_items_db[commons.page:commons.page + commons.limit]
     response.update({"items": items})
     return response
+
+
+"""Sub-dependencies 子依赖"""
+
+
+def query(q: Optional[str] = None):
+    return q
+
+
+def sub_query(q: str = Depends(query), last_query: Optional[str] = None):
+    if not q:
+        return last_query
+    return q
+
+
+@app05.get("/sub_dependency")
+async def sub_dependency(final_query: str = Depends(sub_query,
+                                                    use_cache=True)):
+    """use_cache默认是True,表示当多个依赖有一个共同的子依赖时，每次request请求只会调用子依赖一次"""
+    return {"sub_dependency": final_query}
