@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Form, File, UploadFile
+from fastapi import APIRouter, status, Form, File, UploadFile, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Union
 
@@ -126,7 +126,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
     response_model=UserOut,
     # tags=["Path", "Operation", "Configuration"],
     summary="This is summary",  # 接口路径上的描述
-    description="This is description",   # 请求中的描述
+    description="This is description",  # 请求中的描述
     response_description="This is response description",  # 响应描述
     # deprecated=True,  # 表示这个接口已经废弃
     status_code=status.HTTP_200_OK)
@@ -139,6 +139,21 @@ async def path_operation_configuration(user: UserIn):
     return user.dict()
 
 
-
 """[见 man.py] FastAPI应用的常见配置项"""
+"""Handling Errors 错误处理"""
 
+
+@app04.get("/http_exception")
+async def http_exception(city: str):
+    if city != "Beijing":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="City not found!",
+                            headers={"X-Error": "Error"})
+    return {"city": city}
+
+
+@app04.get("/http_exception/{city_id}")
+async def override_http_exception(city_id: int):
+    if city_id == 1:
+        raise HTTPException(status_code=418, detail="Nope! i don't like 1.")
+    return {"city_id": city_id}
