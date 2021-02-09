@@ -123,12 +123,12 @@ async def upload_files(files: List[UploadFile] = File(...)):
 
 @app04.post(
     "/path_operation_configuration",
-    response_model=UserIn,
-    tags=["Path", "Operation", "Configuration"],
-    summary="This is summary",
-    description="This is description",
-    response_description="This is response description",
-    # deprecated=True,
+    response_model=UserOut,
+    # tags=["Path", "Operation", "Configuration"],
+    summary="This is summary",  # 接口路径上的描述
+    description="This is description",   # 请求中的描述
+    response_description="This is response description",  # 响应描述
+    # deprecated=True,  # 表示这个接口已经废弃
     status_code=status.HTTP_200_OK)
 async def path_operation_configuration(user: UserIn):
     """
@@ -137,3 +137,8 @@ async def path_operation_configuration(user: UserIn):
     return:返回结果
     """
     return user.dict()
+
+
+
+"""[见 man.py] FastAPI应用的常见配置项"""
+

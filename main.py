@@ -2,12 +2,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from tutonal import app03, app04, app05, app06, app07
 
-app = FastAPI()
+app = FastAPI(
+    title="FastAPI Tutorial and Coronavirus Tracker API Docs",
+    description="FastAPI教程 新冠病毒疫情跟踪器API接口文档",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redocs"
+)
 
 # 添加静态文件路由
 # mount表示将某个目录下一个完全独立的应用挂载过来，这个不会在API交互文档中显示
-app.mount(path='/coronavirus/static',
-          app=StaticFiles(directory='./coronavirus/static'),
+app.mount(path='/static',
+          app=StaticFiles(directory='./static'),
           name="static")
 
 # 添加子路由
