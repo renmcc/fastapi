@@ -19,3 +19,36 @@ async def dependency01(commons: dict = Depends(common_parameters)):
 @app05.get("/dependency02")
 def dependency02(commons: dict = Depends(common_parameters)):
     return commons
+
+
+"""Classes as Dependencies 类作为依赖项"""
+fake_items_db = [{
+    "item_name": "Foo"
+}, {
+    "item_name": "Bar"
+}, {
+    "item_name": "Baz"
+}]
+
+
+class CommonQueryParams:
+    def __init__(self,
+                 q: Optional[str] = None,
+                 page: int = 1,
+                 limit: int = 10):
+        self.q = q
+        self.page = page
+        self.limit = limit
+
+
+@app05.get("/classes_as_dependencies")
+# 类作为查询参数有三种写法
+# async def classes_as_dependencies(commons: CommonQueryParams = Depends(CommonQueryParams)):
+# async def classes_as_dependencies(commons: CommonQueryParams = Depends()):
+async def classes_as_dependencies(commons=Depends(CommonQueryParams)):
+    response = {}
+    if commons.q:
+        response.update({"q": commons.q})
+    items = fake_items_db[commons.page:commons.page + commons.limit]
+    response.update({"items": items})
+    return response
