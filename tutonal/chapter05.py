@@ -100,3 +100,8 @@ async def verify_key(x_key: str = Header(...)):
                          Depends(verify_key)])
 async def dependency_in_path_operation():
     return [{"user": "user01"}, {"user": "user02"}]
+
+
+"""Global Dependencies 全局依赖"""
+# 比如把第五章所有的接口都加入依赖，或者在main.py中app中添加
+app05 = APIRouter(dependencies=[Depends(verify_token), Depends(verify_key)])
