@@ -105,18 +105,18 @@ async def dependency_in_path_operation():
 """Global Dependencies 全局依赖"""
 # 比如把第五章所有的接口都加入依赖，或者在main.py中app中添加
 # app05 = APIRouter(dependencies=[Depends(verify_token), Depends(verify_key)])
-
-
 """Dependencies with yield 带yield的依赖"""
+
+
 # 这个需要Python3.7才支持，Python3.6需要pip install async-exit-stack async-generator
 # 以下为伪代码
-
 async def get_db():
     db = "db_connection"
     try:
         yield db
     finally:
         db.endswith("db_close")
+
 
 async def dependdency_a():
     dep_a = "generate_dep_a()"
@@ -125,18 +125,18 @@ async def dependdency_a():
     finally:
         dep_a.endswith("db_close")
 
-async def dependency_b(dep_b=Depends(dependdency_a))
+
+async def dependency_b(dep_b=Depends(dependdency_a)):
     dep_b = "generate_dep_b()"
     try:
         yield dep_b
     finally:
         dep_b.endswith(dep_a)
 
-async def dependency_c(dep_c=Depends(dependdency_b))
+
+async def dependency_c(dep_c=Depends(dependency_b)):
     dep_c = "generate_dep_b()"
     try:
         yield dep_c
     finally:
         dep_c.endswith(dep_b)
-
-
