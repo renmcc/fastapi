@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from tutonal import app03, app04, app05, app06, app07
+from coronavirus import application
 
 # from fastapi.exceptions import RequestValidationError
 # from fastapi.responses import PlainTextResponse
@@ -43,3 +44,6 @@ app.include_router(app06, prefix='/chapter06', tags=["第六章 安全、认证�
 app.include_router(app07,
                    prefix='/chapter07',
                    tags=["第七章 FastAPI的数据库操作和多应用的目录结构设计"])
+app.include_router(application, prefix='/coronavirus', tags=['新冠病毒疫情跟踪器API'])
+
+

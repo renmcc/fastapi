@@ -30,7 +30,7 @@ class City(Base):
 
 
 class Data(Base):
-    __tablename__ = 'city'
+    __tablename__ = 'data'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     city_id = Column(Integer, ForeignKey("city.id"),
                      comment="所属省/直辖市")  # ForeignKey里的字符串格式不是类名.属性名，而是表名.字段名
