@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from tutonal import app03, app04, app05, app06, app07, app08
 from coronavirus import application
 import time
@@ -48,6 +49,18 @@ async def add_process_time_header(request: Request, call_next):
     process_time = time.time() - start_time
     response.headers['X-Process-Time'] = str(process_time)
     return response
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1",
+        "http://127.0.0.1:8000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 # 添加子路由
