@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from tutonal import app03, app04, app05, app06, app07
+from tutonal import app03, app04, app05, app06, app07, app08
 from coronavirus import application
+import time
 
 # from fastapi.exceptions import RequestValidationError
 # from fastapi.responses import PlainTextResponse
@@ -36,6 +37,19 @@ app.mount(path='/static',
           app=StaticFiles(directory='./coronavirus/static'),
           name="static")
 
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    """
+    call_next将接收到的request请求作为参数
+    """
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers['X-Process-Time'] = str(process_time)
+    return response
+
+
 # 添加子路由
 app.include_router(app03, prefix='/chapter03', tags=['第三章 请求参数和验证'])
 app.include_router(app04, prefix='/chapter04', tags=['第四章 响应处理和FastAPI配置'])
@@ -44,6 +58,5 @@ app.include_router(app06, prefix='/chapter06', tags=["第六章 安全、认证�
 app.include_router(app07,
                    prefix='/chapter07',
                    tags=["第七章 FastAPI的数据库操作和多应用的目录结构设计"])
+app.include_router(app08, prefix='/chapter08', tags=["第八章 中间件、CORS、后台任务、测试用例"])
 app.include_router(application, prefix='/coronavirus', tags=['新冠病毒疫情跟踪器API'])
-
-
